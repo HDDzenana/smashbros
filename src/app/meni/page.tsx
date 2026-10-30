@@ -3,17 +3,23 @@ import Image from "next/image";
 import { formatKm } from "@/lib/format";
 import { getSite } from "@/lib/contentful";
 
-export const metadata: Metadata = { title: "Meni" };
-export const revalidate = 60;
+export async function generateMetadata(): Promise<Metadata> {
+  const { settings } = await getSite();
+  return { title: settings.menuTitle };
+}
 
 export default async function MenuPage() {
-  const { burgers, extras, drinks, combos } = await getSite();
-  const groups = ["Prilog", "Dodatak", "Sos"];
+  const { settings, burgers, extras, drinks, combos } = await getSite();
+  const groups = [
+    { id: "Prilog", label: settings.sidesHeading },
+    { id: "Dodatak", label: settings.addonsHeading },
+    { id: "Sos", label: settings.saucesHeading },
+  ];
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-12">
-      <p className="text-sm font-bold uppercase tracking-[0.25em] text-red">Smash burgeri</p>
-      <h1 className="mt-2 text-6xl font-extrabold uppercase tracking-tight">Meni</h1>
+      {settings.menuKicker ? <p className="text-sm font-bold uppercase tracking-[0.25em] text-red">{settings.menuKicker}</p> : null}
+      <h1 className="mt-2 text-6xl font-extrabold uppercase tracking-tight">{settings.menuTitle}</h1>
 
       <section className="mt-10 space-y-8">
         {burgers.map((burger) => (
@@ -57,12 +63,12 @@ export default async function MenuPage() {
       ))}
 
       <section className="mt-12 grid gap-8 md:grid-cols-3">
-        {groups.map((group) => (
-          <div key={group}>
-            <h2 className="font-display text-3xl uppercase">{group === "Prilog" ? "Prilozi" : group === "Dodatak" ? "Dodaci" : "Sosovi"}</h2>
+        {groups.filter((group) => extras.some((item) => item.group === group.id)).map((group) => (
+          <div key={group.id}>
+            <h2 className="font-display text-3xl uppercase">{group.label}</h2>
             <ul className="mt-4 space-y-3">
               {extras
-                .filter((item) => item.group === group)
+                .filter((item) => item.group === group.id)
                 .map((item) => (
                   <li key={`${item.name}-${item.detail}`} className="border-b border-ink/20 pb-3">
                     <div className="flex items-baseline justify-between gap-3">
@@ -80,8 +86,9 @@ export default async function MenuPage() {
         ))}
       </section>
 
+      {drinks.length > 0 ? (
       <section className="mt-12">
-        <h2 className="font-display text-3xl uppercase">Piće</h2>
+        <h2 className="font-display text-3xl uppercase">{settings.drinksHeading}</h2>
         <ul className="mt-4 divide-y divide-ink/20 border-y border-ink/20">
           {drinks.map((drink) => (
             <li key={drink.name} className="flex items-baseline justify-between py-3">
@@ -91,6 +98,7 @@ export default async function MenuPage() {
           ))}
         </ul>
       </section>
+      ) : null}
     </main>
   );
 }

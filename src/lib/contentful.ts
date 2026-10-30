@@ -14,6 +14,26 @@ export type Settings = {
   tagline: string;
   slogan: string;
   about: string;
+  aboutKicker: string;
+  aboutHeading: string;
+  orderStrip: string;
+  menuKicker: string;
+  menuTitle: string;
+  sidesHeading: string;
+  addonsHeading: string;
+  saucesHeading: string;
+  drinksHeading: string;
+  promotionsKicker: string;
+  promotionsTitle: string;
+  locationKicker: string;
+  locationTitle: string;
+  mapsLabel: string;
+  hoursHeading: string;
+  takeawayKicker: string;
+  previousLabel: string;
+  nextLabel: string;
+  closeLabel: string;
+  footerLabel: string;
   phoneDisplay: string;
   phoneHref: string;
   instagram: string;
@@ -118,6 +138,7 @@ export type SiteContent = {
   combos: Combo[];
   promotions: Promotion[];
   burgerParts: BurgerPart[];
+  sections: { key: string; sortOrder: number }[];
 };
 
 type AssetFile = {
@@ -207,13 +228,37 @@ export const getSite = cache(async (): Promise<SiteContent> => {
 
   const settingsEntry = ofType("siteSettings")[0];
   if (!settingsEntry) throw new Error("U Contentfulu nema postavki sajta.");
-  const fields = settingsEntry.fields;
+  const labels = ofType("pageLabels")[0]?.fields ?? {};
+  const fields = { ...labels };
+  for (const [key, value] of Object.entries(settingsEntry.fields)) {
+    if (value !== "" && value != null) fields[key] = value;
+  }
 
   const settings: Settings = {
     siteName: text(fields.siteName),
     tagline: text(fields.tagline),
     slogan: text(fields.slogan),
     about: text(fields.about),
+    aboutKicker: text(fields.aboutKicker),
+    aboutHeading: text(fields.aboutHeading),
+    orderStrip: text(fields.orderStrip),
+    menuKicker: text(fields.menuKicker),
+    menuTitle: text(fields.menuTitle),
+    sidesHeading: text(fields.sidesHeading),
+    addonsHeading: text(fields.addonsHeading),
+    saucesHeading: text(fields.saucesHeading),
+    drinksHeading: text(fields.drinksHeading),
+    promotionsKicker: text(fields.promotionsKicker),
+    promotionsTitle: text(fields.promotionsTitle),
+    locationKicker: text(fields.locationKicker),
+    locationTitle: text(fields.locationTitle),
+    mapsLabel: text(fields.mapsLabel),
+    hoursHeading: text(fields.hoursHeading),
+    takeawayKicker: text(fields.takeawayKicker),
+    previousLabel: text(fields.previousLabel),
+    nextLabel: text(fields.nextLabel),
+    closeLabel: text(fields.closeLabel),
+    footerLabel: text(fields.footerLabel),
     phoneDisplay: text(fields.phoneDisplay),
     phoneHref: text(fields.phoneHref),
     instagram: text(fields.instagram),
@@ -310,6 +355,14 @@ export const getSite = cache(async (): Promise<SiteContent> => {
           price: price(entry.fields.price),
           description: text(entry.fields.description),
           image: picture(entry.fields.image as Link, assets),
+          sortOrder: order(entry.fields.sortOrder),
+        })),
+    ),
+    sections: byOrder(
+      ofType("homeSection")
+        .filter((entry) => entry.fields.visible !== false)
+        .map((entry) => ({
+          key: text(entry.fields.key),
           sortOrder: order(entry.fields.sortOrder),
         })),
     ),

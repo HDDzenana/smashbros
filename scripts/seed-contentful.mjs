@@ -400,10 +400,10 @@ async function main() {
 
   await ensureEntry("siteSettings", "Smash Bros", same("siteName", "Smash Bros"), {
     siteName: loc("Smash Bros"),
-    tagline: loc("Smash burgeri na Grbavičkoj"),
+    tagline: loc("Smash Bros - Smash burgeri Sarajevo"),
     slogan: loc("Nije sramota prste polizat'"),
     about: loc(
-      "Smash Bros je burger joint na Grbavičkoj. Premium meso ide na žar, smrska se dok ne dobije koricu, pa se složi u brioche pecivo sa dva cheddara. Četiri burgera imaju svoja imena: Oridžidži, Medeni, Huja i Meza. Sos ide uz ime, a prsti su dozvoljeni.",
+      "Smash Bros je smash burger u Sarajevu, na adresi Grbavička bb. Premium meso ide na žar, smrska se dok ne dobije koricu, pa se složi u brioche pecivo sa dva cheddara. Četiri burgera imaju svoja imena: Oridžidži, Medeni, Huja i Meza. Sos ide uz ime, a prsti su dozvoljeni.",
     ),
     phoneDisplay: loc("062 444 904"),
     phoneHref: loc("tel:+38762444904"),

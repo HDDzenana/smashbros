@@ -3,16 +3,18 @@ import Image from "next/image";
 import { formatKm } from "@/lib/format";
 import { getSite } from "@/lib/contentful";
 
-export const metadata: Metadata = { title: "Akcije" };
-export const revalidate = 60;
+export async function generateMetadata(): Promise<Metadata> {
+  const { settings } = await getSite();
+  return { title: settings.promotionsTitle };
+}
 
 export default async function PromotionsPage() {
-  const { promotions } = await getSite();
+  const { settings, promotions } = await getSite();
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-12">
-      <p className="text-sm font-bold uppercase tracking-[0.25em] text-red">Sedmica</p>
-      <h1 className="mt-2 text-6xl font-extrabold uppercase tracking-tight">Akcije</h1>
+      {settings.promotionsKicker ? <p className="text-sm font-bold uppercase tracking-[0.25em] text-red">{settings.promotionsKicker}</p> : null}
+      <h1 className="mt-2 text-6xl font-extrabold uppercase tracking-tight">{settings.promotionsTitle}</h1>
       <div className="mt-10 grid gap-8">
         {promotions.map((promo) => (
           <article key={promo.title} className="grid overflow-hidden rounded-[1.6rem] border border-ink/10 bg-paper md:grid-cols-2">

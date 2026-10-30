@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { BurgerRow } from "@/components/burger-row";
 import { HeroStage } from "@/components/hero-stage";
 import { formatKm } from "@/lib/format";
 import { getSite } from "@/lib/contentful";
@@ -12,46 +13,14 @@ function whatsappHref(phoneHref: string, message: string) {
 }
 
 export default async function HomePage() {
-  const { settings, burgers, combos, promotions, burgerParts, hours } = await getSite();
+  const { settings, burgers, combos, promotions, hours, sections } = await getSite();
   const orderHref = whatsappHref(settings.phoneHref, settings.whatsappMessage);
+  const keys = (sections.length > 0 ? sections.map((section) => section.key) : ["about", "promotions", "burgers", "instagram", "visit"]);
 
-  return (
-    <main>
-      <HeroStage
-        title={settings.heroTitle}
-        slogan={settings.slogan}
-        tagline={settings.tagline}
-        imageUrl={settings.heroImage?.url ?? null}
-        imageAlt={settings.heroImage?.alt ?? ""}
-        orderHref={orderHref}
-        orderLabel={settings.orderButton}
-      />
-
-      {burgerParts.length > 0 ? (
-        <section className="relative overflow-hidden px-4 py-20">
-          <p aria-hidden="true" className="pointer-events-none select-none text-center text-[13vw] font-extrabold uppercase leading-[0.78] text-red">
-            {settings.slogan}
-            <br />
-            {settings.slogan}
-          </p>
-          <div className="pointer-events-none absolute inset-x-0 top-8 bottom-8 flex flex-col items-center justify-center">
-            {burgerParts.map((part, index) => (
-              <Image
-                key={part.name}
-                src={part.image.url}
-                alt={part.name}
-                width={part.image.width}
-                height={part.image.height}
-                className="w-[min(42vw,15rem)] object-contain mix-blend-multiply"
-                style={{ marginTop: index === 0 ? 0 : "-6%", transform: `rotate(${(index % 2 === 0 ? -4 : 5)}deg)` }}
-              />
-            ))}
-          </div>
-        </section>
-      ) : null}
-
-      {promotions.length > 0 || combos.length > 0 ? (
-      <section className="mx-auto grid max-w-6xl gap-4 px-4 py-16 md:grid-cols-3">
+  const blocks = keys.flatMap((key) => {
+    if (key === "promotions" && (promotions.length > 0 || combos.length > 0)) {
+      return [
+      <section key="promotions" className="mx-auto grid max-w-6xl gap-4 px-4 pb-16 md:grid-cols-3">
         {promotions.map((promo, index) => (
           <article key={promo.title} className={`overflow-hidden rounded-3xl p-5 ${index === 1 ? "bg-red text-paper" : "bg-[#f0b429] text-ink"}`}>
             {promo.image ? (
@@ -73,41 +42,60 @@ export default async function HomePage() {
             <p className="mt-4 text-5xl font-extrabold text-[#f0b429]">{formatKm(combos[0].price)}</p>
           </article>
         ) : null}
-      </section>
-      ) : null}
-
-      <section id="o-nama" className="mx-auto max-w-4xl px-4 py-16 text-center">
-        <p className="text-sm font-extrabold uppercase leading-relaxed tracking-wide md:text-base">{settings.about}</p>
-        <Link href="/lokacija" className="mt-6 inline-block text-sm font-extrabold lowercase text-blue underline">
-          {settings.learnMore}
-        </Link>
-      </section>
-
-      <section className="mx-auto max-w-6xl px-4 py-8">
-        <div className="mb-8 flex items-end justify-between gap-4">
-          <h2 className="text-4xl font-extrabold uppercase tracking-tight text-blue md:text-5xl">{settings.burgersHeading}</h2>
-          <Link href="/meni" className="text-sm font-extrabold lowercase text-blue underline">
-            {settings.menuLink}
-          </Link>
-        </div>
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {burgers.map((burger) => (
-            <article key={burger.slug}>
-              {burger.image ? (
-                <Image src={burger.image.url} alt={burger.image.alt} width={burger.image.width} height={burger.image.height} className="aspect-square w-full rounded-3xl object-cover" />
-              ) : null}
-              <h3 className="mt-4 text-2xl font-extrabold uppercase text-blue">{burger.name}</h3>
-              <p className="mt-2 text-sm leading-relaxed">
-                <span className="font-extrabold">{settings.ingredientsLabel}: </span>
-                {burger.ingredients.join(", ")}
-              </p>
-              <p className="mt-3 text-sm font-extrabold uppercase tracking-wide">{formatKm(burger.price)}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-6xl px-4 py-16">
+      </section>,
+      ];
+    }
+    if (key === "about" && settings.about) {
+      return [
+        <section id="o-nama" key="about" data-flush="1" className="bg-red text-paper">
+          <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-12 md:flex-row md:items-end md:justify-between">
+            <h2 className="text-5xl font-extrabold uppercase leading-[0.85] text-paper md:text-7xl">
+              {settings.aboutKicker}
+              <br />
+              {settings.aboutHeading}
+            </h2>
+            <div className="max-w-md">
+              <p className="text-xs font-extrabold uppercase leading-relaxed">{settings.about}</p>
+              <Link href="/lokacija" className="mt-5 inline-block rounded-full bg-paper px-5 py-2 text-xs font-extrabold uppercase tracking-[0.14em] text-red">
+                {settings.learnMore}
+              </Link>
+            </div>
+          </div>
+          {settings.gallery.length > 0 ? (
+            <div className="flex items-end justify-center gap-4 overflow-hidden px-4 pb-12">
+              {settings.gallery.map((photo, index) => (
+                <Image
+                  key={photo.url}
+                  src={photo.url}
+                  alt={photo.alt}
+                  width={photo.width}
+                  height={photo.height}
+                  className={`aspect-square shrink-0 object-cover ${index % 2 === 0 ? "w-[min(28vw,16rem)] rounded-full" : "w-[min(34vw,22rem)]"}`}
+                />
+              ))}
+            </div>
+          ) : null}
+        </section>,
+      ];
+    }
+    if (key === "burgers" && burgers.length > 0) {
+      return [
+        <section key="burgers" className="mx-auto max-w-6xl px-4 pb-16">
+          <h2 className="text-center text-3xl font-extrabold uppercase tracking-tight text-red md:text-5xl">{settings.burgersHeading}</h2>
+          <div className="mt-10">
+            <BurgerRow burgers={burgers} ingredientsLabel={settings.ingredientsLabel} previousLabel={settings.previousLabel} nextLabel={settings.nextLabel} />
+          </div>
+          <div className="mt-10 text-center">
+            <Link href="/meni" className="inline-block rounded-full bg-red px-6 py-3 text-xs font-extrabold uppercase tracking-[0.16em] text-paper">
+              {settings.menuLink}
+            </Link>
+          </div>
+        </section>,
+      ];
+    }
+    if (key === "instagram" && settings.gallery.length > 0) {
+      return [
+      <section key="instagram" className="mx-auto max-w-6xl px-4 pb-16">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <h2 className="max-w-xl text-4xl font-extrabold uppercase leading-none text-blue md:text-5xl">{settings.instagramHeading}</h2>
           <a href={settings.instagramUrl} target="_blank" rel="noreferrer" className="text-sm font-extrabold text-blue underline">
@@ -121,9 +109,12 @@ export default async function HomePage() {
             </a>
           ))}
         </div>
-      </section>
-
-      <section className="mx-auto grid max-w-6xl gap-6 px-4 py-8 md:grid-cols-2">
+      </section>,
+      ];
+    }
+    if (key === "visit") {
+      return [
+      <section key="visit" className="mx-auto grid max-w-6xl gap-6 px-4 pb-16 md:grid-cols-2">
         <article className="rounded-[2rem] bg-cream p-8">
           <h2 className="text-4xl font-extrabold uppercase text-blue">{settings.address}</h2>
           <p className="mt-2 uppercase">{settings.city}</p>
@@ -144,7 +135,7 @@ export default async function HomePage() {
         </article>
         <article className="flex flex-col justify-between rounded-[2rem] bg-red p-8 text-paper">
           <div>
-            <p className="text-xs font-extrabold uppercase tracking-[0.16em]">Za ponijeti</p>
+            {settings.takeawayKicker ? <p className="text-xs font-extrabold uppercase tracking-[0.16em]">{settings.takeawayKicker}</p> : null}
             <h2 className="mt-3 text-4xl font-extrabold uppercase leading-none">{settings.whatsappTitle}</h2>
             <p className="mt-4 max-w-md text-sm leading-relaxed">{settings.whatsappBody}</p>
           </div>
@@ -157,7 +148,28 @@ export default async function HomePage() {
             </a>
           </div>
         </article>
-      </section>
+      </section>,
+      ];
+    }
+    return [];
+  });
+
+  return (
+    <main>
+      <HeroStage
+        title={settings.heroTitle}
+        slogan={settings.slogan}
+        tagline={settings.tagline}
+        imageUrl={settings.heroImage?.url ?? null}
+        imageAlt={settings.heroImage?.alt ?? ""}
+        orderHref={orderHref}
+        orderLabel={settings.orderButton}
+      />
+      {blocks.map((block, index) => (
+        <div key={index} className={index === 0 ? "pt-0" : "pt-16"}>
+          {block}
+        </div>
+      ))}
     </main>
   );
 }

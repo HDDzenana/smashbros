@@ -15,6 +15,7 @@ export function SiteFooter({
   instagramUrl,
   whatsappHref,
   labels,
+  footerLabel,
 }: {
   siteName: string;
   address: string;
@@ -25,32 +26,39 @@ export function SiteFooter({
   instagramUrl: string;
   whatsappHref: string;
   labels: { about: string; menu: string; promotions: string; location: string; order: string };
+  footerLabel: string;
 }) {
   return (
-    <footer className="border-t border-ink/10 bg-paper">
-      <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-10 md:flex-row md:items-start md:justify-between">
-        <p className="text-2xl font-extrabold uppercase leading-none tracking-wide text-blue">{siteName}</p>
-        <nav className="flex flex-wrap gap-x-5 gap-y-2 text-[11px] font-extrabold uppercase tracking-[0.16em]" aria-label="Podnožje">
+    <footer className="bg-red text-paper">
+      <div className="mx-auto flex max-w-6xl flex-col gap-10 px-4 py-12 md:flex-row md:items-start md:justify-between">
+        <p className="text-3xl font-extrabold uppercase leading-none">{siteName}</p>
+        <nav className="flex flex-col gap-2 text-sm font-extrabold uppercase tracking-[0.14em]" aria-label={footerLabel}>
           {linkHrefs.map((link) => (
             <a key={link.href} href={link.href}>
               {labels[link.key]}
             </a>
           ))}
         </nav>
-        <div className="text-sm">
-          <p>
-            {address}, {city}
-          </p>
-          <a href={phoneHref} className="mt-1 block font-extrabold">
-            {phoneDisplay}
+        <div className="flex flex-col items-start gap-4">
+          <a
+            href={instagramUrl}
+            target="_blank"
+            rel="noreferrer"
+            aria-label={instagram}
+            className="grid h-11 w-11 place-items-center rounded-full bg-paper text-sm font-extrabold text-red"
+          >
+            Ig
           </a>
-          <a href={instagramUrl} className="mt-1 block font-extrabold text-blue" target="_blank" rel="noreferrer">
-            {instagram}
-          </a>
-          <a href={whatsappHref} className="mt-1 block font-extrabold text-blue">
+          <a href={whatsappHref} className="rounded-full bg-[#25D366] px-5 py-3 text-xs font-extrabold uppercase tracking-[0.14em] text-white">
             {labels.order}
           </a>
+          <a href={phoneHref} className="text-sm font-extrabold">
+            {phoneDisplay}
+          </a>
         </div>
+      </div>
+      <div className="border-t border-paper/30 px-4 py-4 text-center text-[11px] font-extrabold uppercase tracking-[0.14em]">
+        {address}, {city}
       </div>
     </footer>
   );

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Nunito } from "next/font/google";
+import { OrderStrip } from "@/components/order-strip";
 import { OrderWidgets } from "@/components/order-widgets";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -50,6 +51,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           }}
         />
         {children}
+        <OrderStrip words={settings.orderStrip} pill={settings.orderButton} href={orderHref} />
         <SiteFooter
           siteName={settings.siteName}
           address={settings.address}
@@ -66,6 +68,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
             location: settings.navLocation,
             order: settings.whatsappButton,
           }}
+          footerLabel={settings.footerLabel}
         />
         <OrderWidgets
           whatsappHref={orderHref}
@@ -79,6 +82,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           cookieAccept={settings.cookieAccept}
           fabLabel={settings.fabLabel}
           showOrderPopup={settings.showOrderPopup}
+          closeLabel={settings.closeLabel}
         />
       </body>
     </html>
