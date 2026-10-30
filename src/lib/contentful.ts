@@ -138,7 +138,8 @@ export type SiteContent = {
   combos: Combo[];
   promotions: Promotion[];
   burgerParts: BurgerPart[];
-  sections: { key: string; sortOrder: number }[];
+  sections: { id: string; key: string; name: string }[];
+  orderImage: Picture | null;
 };
 
 type AssetFile = {
@@ -154,7 +155,7 @@ type Asset = {
 type Link = { sys?: { id?: string } };
 
 type RawEntry = {
-  sys: { contentType: { sys: { id: string } } };
+  sys: { id: string; contentType: { sys: { id: string } } };
   fields: Record<string, unknown>;
 };
 
@@ -358,14 +359,23 @@ export const getSite = cache(async (): Promise<SiteContent> => {
           sortOrder: order(entry.fields.sortOrder),
         })),
     ),
-    sections: byOrder(
-      ofType("homeSection")
-        .filter((entry) => entry.fields.visible !== false)
-        .map((entry) => ({
-          key: text(entry.fields.key),
-          sortOrder: order(entry.fields.sortOrder),
-        })),
-    ),
+    sections: (() => {
+      const available = ofType("homeSection").filter((entry) => entry.fields.visible !== false);
+      const byId = new Map(available.map((entry) => [entry.sys.id, entry]));
+      const homepage = ofType("homepage")[0];
+      const linked = Array.isArray(homepage?.fields.sections) ? (homepage.fields.sections as Link[]) : [];
+      const ordered = linked.flatMap((link) => {
+        const entry = byId.get(link.sys?.id ?? "");
+        return entry ? [entry] : [];
+      });
+      const list = ordered.length > 0 ? ordered : available;
+      return list.map((entry) => ({
+        id: entry.sys.id,
+        key: text(entry.fields.key),
+        name: text(entry.fields.name) || text(entry.fields.key),
+      }));
+    })(),
+    orderImage: picture(ofType("homepage")[0]?.fields.orderImage as Link, assets),
     burgerParts: byOrder(
       ofType("burgerPart").flatMap((entry) => {
         if (entry.fields.visible === false) return [];
