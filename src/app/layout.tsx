@@ -13,10 +13,9 @@ const sans = Nunito({
   variable: "--font-nunito",
 });
 
-function whatsappHref(phoneHref: string) {
+function whatsappHref(phoneHref: string, message: string) {
   const digits = phoneHref.replace(/\D/g, "");
-  const text = encodeURIComponent("Zdravo Smash Bros, želim naručiti.");
-  return `https://wa.me/${digits}?text=${text}`;
+  return `https://wa.me/${digits}?text=${encodeURIComponent(message)}`;
 }
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -32,12 +31,24 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   const { settings } = await getSite();
-  const orderHref = whatsappHref(settings.phoneHref);
+  const orderHref = whatsappHref(settings.phoneHref, settings.whatsappMessage);
 
   return (
     <html lang="bs" className={sans.variable} data-scroll-behavior="smooth">
       <body className="bg-paper font-sans text-ink antialiased">
-        <SiteHeader siteName={settings.siteName} phoneHref={settings.phoneHref} whatsappHref={orderHref} logoUrl={settings.logo?.url ?? null} />
+        <SiteHeader
+          siteName={settings.siteName}
+          phoneHref={settings.phoneHref}
+          whatsappHref={orderHref}
+          logoUrl={settings.logo?.url ?? null}
+          labels={{
+            about: settings.navAbout,
+            menu: settings.navMenu,
+            location: settings.navLocation,
+            call: settings.callLabel,
+            order: settings.orderLabel,
+          }}
+        />
         {children}
         <SiteFooter
           siteName={settings.siteName}
@@ -48,8 +59,26 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           instagram={settings.instagram}
           instagramUrl={settings.instagramUrl}
           whatsappHref={orderHref}
+          labels={{
+            about: settings.navAbout,
+            menu: settings.navMenu,
+            promotions: settings.promotionsHeading,
+            location: settings.navLocation,
+            order: settings.whatsappButton,
+          }}
         />
-        <OrderWidgets whatsappHref={orderHref} />
+        <OrderWidgets
+          whatsappHref={orderHref}
+          kicker={settings.whatsappKicker}
+          title={settings.whatsappTitle}
+          body={settings.whatsappBody}
+          button={settings.whatsappButton}
+          later={settings.whatsappLater}
+          cookieTitle={settings.cookieTitle}
+          cookieBody={settings.cookieBody}
+          cookieAccept={settings.cookieAccept}
+          fabLabel={settings.fabLabel}
+        />
       </body>
     </html>
   );

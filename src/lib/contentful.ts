@@ -25,6 +25,29 @@ export type Settings = {
   heroTitle: string;
   heroText: string;
   hoursNote: string;
+  orderButton: string;
+  learnMore: string;
+  burgersHeading: string;
+  menuLink: string;
+  ingredientsLabel: string;
+  instagramHeading: string;
+  promotionsHeading: string;
+  promotionsLink: string;
+  navAbout: string;
+  navMenu: string;
+  navLocation: string;
+  callLabel: string;
+  orderLabel: string;
+  whatsappKicker: string;
+  whatsappTitle: string;
+  whatsappBody: string;
+  whatsappButton: string;
+  whatsappLater: string;
+  whatsappMessage: string;
+  cookieTitle: string;
+  cookieBody: string;
+  cookieAccept: string;
+  fabLabel: string;
   logo: Picture | null;
   heroImage: Picture | null;
   gallery: Picture[];
@@ -162,7 +185,7 @@ export const getSite = cache(async (): Promise<SiteContent> => {
   url.searchParams.set("include", "2");
   url.searchParams.set("limit", "200");
 
-  const response = await fetch(url, { next: { revalidate: 60 } });
+  const response = await fetch(url, { cache: "no-store" });
   if (!response.ok) {
     throw new Error(`Contentful nije vratio sadržaj (${response.status})`);
   }
@@ -194,6 +217,29 @@ export const getSite = cache(async (): Promise<SiteContent> => {
     heroTitle: text(fields.heroTitle),
     heroText: text(fields.heroText),
     hoursNote: text(fields.hoursNote),
+    orderButton: text(fields.orderButton),
+    learnMore: text(fields.learnMore),
+    burgersHeading: text(fields.burgersHeading),
+    menuLink: text(fields.menuLink),
+    ingredientsLabel: text(fields.ingredientsLabel),
+    instagramHeading: text(fields.instagramHeading),
+    promotionsHeading: text(fields.promotionsHeading),
+    promotionsLink: text(fields.promotionsLink),
+    navAbout: text(fields.navAbout),
+    navMenu: text(fields.navMenu),
+    navLocation: text(fields.navLocation),
+    callLabel: text(fields.callLabel),
+    orderLabel: text(fields.orderLabel),
+    whatsappKicker: text(fields.whatsappKicker),
+    whatsappTitle: text(fields.whatsappTitle),
+    whatsappBody: text(fields.whatsappBody),
+    whatsappButton: text(fields.whatsappButton),
+    whatsappLater: text(fields.whatsappLater),
+    whatsappMessage: text(fields.whatsappMessage),
+    cookieTitle: text(fields.cookieTitle),
+    cookieBody: text(fields.cookieBody),
+    cookieAccept: text(fields.cookieAccept),
+    fabLabel: text(fields.fabLabel),
     logo: picture(fields.logo as Link, assets),
     heroImage: picture(fields.heroImage as Link, assets),
     gallery: pictures(fields.gallery as Link[], assets),

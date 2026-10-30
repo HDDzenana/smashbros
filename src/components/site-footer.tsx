@@ -1,9 +1,9 @@
-const links = [
-  { href: "/#o-nama", label: "O nama" },
-  { href: "/meni", label: "Meni" },
-  { href: "/akcije", label: "Akcije" },
-  { href: "/lokacija", label: "Lokacija" },
-];
+const linkHrefs = [
+  { href: "/#o-nama", key: "about" },
+  { href: "/meni", key: "menu" },
+  { href: "/akcije", key: "promotions" },
+  { href: "/lokacija", key: "location" },
+] as const;
 
 export function SiteFooter({
   siteName,
@@ -14,6 +14,7 @@ export function SiteFooter({
   instagram,
   instagramUrl,
   whatsappHref,
+  labels,
 }: {
   siteName: string;
   address: string;
@@ -23,15 +24,16 @@ export function SiteFooter({
   instagram: string;
   instagramUrl: string;
   whatsappHref: string;
+  labels: { about: string; menu: string; promotions: string; location: string; order: string };
 }) {
   return (
     <footer className="border-t border-ink/10 bg-paper">
       <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-10 md:flex-row md:items-start md:justify-between">
         <p className="text-2xl font-extrabold uppercase leading-none tracking-wide text-blue">{siteName}</p>
         <nav className="flex flex-wrap gap-x-5 gap-y-2 text-[11px] font-extrabold uppercase tracking-[0.16em]" aria-label="Podnožje">
-          {links.map((link) => (
+          {linkHrefs.map((link) => (
             <a key={link.href} href={link.href}>
-              {link.label}
+              {labels[link.key]}
             </a>
           ))}
         </nav>
@@ -46,7 +48,7 @@ export function SiteFooter({
             {instagram}
           </a>
           <a href={whatsappHref} className="mt-1 block font-extrabold text-blue">
-            Naruči na WhatsApp
+            {labels.order}
           </a>
         </div>
       </div>

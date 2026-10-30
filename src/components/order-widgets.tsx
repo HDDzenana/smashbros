@@ -10,7 +10,29 @@ function WhatsAppIcon({ className }: { className?: string }) {
   );
 }
 
-export function OrderWidgets({ whatsappHref }: { whatsappHref: string }) {
+export function OrderWidgets({
+  whatsappHref,
+  kicker,
+  title,
+  body,
+  button,
+  later,
+  cookieTitle,
+  cookieBody,
+  cookieAccept,
+  fabLabel,
+}: {
+  whatsappHref: string;
+  kicker: string;
+  title: string;
+  body: string;
+  button: string;
+  later: string;
+  cookieTitle: string;
+  cookieBody: string;
+  cookieAccept: string;
+  fabLabel: string;
+}) {
   const [cookies, setCookies] = useState(false);
   const [modal, setModal] = useState(false);
 
@@ -38,19 +60,19 @@ export function OrderWidgets({ whatsappHref }: { whatsappHref: string }) {
               ×
             </button>
             <div className="bg-blue px-6 py-10 text-center text-paper">
-              <p className="text-3xl font-extrabold uppercase leading-none tracking-tight">Gladni?</p>
-              <p className="mt-2 text-3xl font-extrabold uppercase leading-none tracking-tight">Javi se na WhatsApp!</p>
+              <p className="text-3xl font-extrabold uppercase leading-none tracking-tight">{kicker}</p>
+              <p className="mt-2 text-3xl font-extrabold uppercase leading-none tracking-tight">{title}</p>
             </div>
             <div className="px-6 py-6 text-center">
               <p className="text-sm leading-relaxed">
-                Naručivanje je sad kao poruka drugu. Preskoči red u par klikova. Bez priče. Samo burgeri.
+                {body}
               </p>
               <a href={whatsappHref} className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#25D366] px-5 py-3 text-sm font-extrabold uppercase tracking-wide text-white">
                 <WhatsAppIcon className="h-5 w-5" />
-                Naruči na WhatsApp
+                {button}
               </a>
               <button type="button" onClick={closeModal} className="mt-4 block w-full text-sm font-extrabold uppercase tracking-widest">
-                Ne sad
+                {later}
               </button>
             </div>
           </div>
@@ -59,21 +81,21 @@ export function OrderWidgets({ whatsappHref }: { whatsappHref: string }) {
 
       {cookies ? (
         <aside className="fixed bottom-4 left-4 z-40 w-[min(100%-2rem,22rem)] border border-ink bg-paper p-4 shadow-lg">
-          <p className="text-sm font-extrabold uppercase">Ovaj sajt koristi kolačiće (njam!)</p>
-          <p className="mt-2 text-xs uppercase leading-relaxed">Da bi sve na sajtu radilo kako treba.</p>
+          <p className="text-sm font-extrabold uppercase">{cookieTitle}</p>
+          <p className="mt-2 text-xs uppercase leading-relaxed">{cookieBody}</p>
           <button type="button" onClick={acceptCookies} className="mt-4 rounded-full bg-blue px-4 py-2 text-xs font-extrabold uppercase tracking-widest text-paper">
-            Prihvati
+            {cookieAccept}
           </button>
         </aside>
       ) : null}
 
-      <a href={whatsappHref} className="fixed bottom-4 right-4 z-40 grid h-24 w-24 place-items-center" aria-label="Naruči na WhatsApp">
+      <a href={whatsappHref} className="fixed bottom-4 right-4 z-40 grid h-24 w-24 place-items-center" aria-label={button}>
         <svg viewBox="0 0 100 100" className="spin-slow absolute inset-0 text-blue" aria-hidden="true">
           <defs>
             <path id="wa-circle" d="M50,50 m-38,0 a38,38 0 1,1 76,0 a38,38 0 1,1 -76,0" />
           </defs>
           <text fontSize="11" fontWeight="800" fill="currentColor">
-            <textPath href="#wa-circle">NARUČI BRZO · NARUČI BRZO · </textPath>
+            <textPath href="#wa-circle">{`${fabLabel} · ${fabLabel} · `}</textPath>
           </text>
         </svg>
         <span className="grid h-12 w-12 place-items-center rounded-full bg-[#25D366] text-white">

@@ -6,15 +6,14 @@ import { getSite } from "@/lib/contentful";
 
 export const revalidate = 60;
 
-function whatsappHref(phoneHref: string) {
+function whatsappHref(phoneHref: string, message: string) {
   const digits = phoneHref.replace(/\D/g, "");
-  const text = encodeURIComponent("Zdravo Smash Bros, želim naručiti za ponijeti.");
-  return `https://wa.me/${digits}?text=${text}`;
+  return `https://wa.me/${digits}?text=${encodeURIComponent(message)}`;
 }
 
 export default async function HomePage() {
-  const { settings, burgers, promotions, hours } = await getSite();
-  const orderHref = whatsappHref(settings.phoneHref);
+  const { settings, burgers, combos, promotions, hours } = await getSite();
+  const orderHref = whatsappHref(settings.phoneHref, settings.whatsappMessage);
 
   return (
     <main>
@@ -25,31 +24,56 @@ export default async function HomePage() {
         imageUrl={settings.heroImage?.url ?? null}
         imageAlt={settings.heroImage?.alt ?? ""}
         orderHref={orderHref}
+        orderLabel={settings.orderButton}
       />
+
+      <section className="mx-auto grid max-w-6xl gap-4 px-4 py-16 md:grid-cols-3">
+        {promotions.map((promo, index) => (
+          <article key={promo.title} className={`overflow-hidden rounded-3xl p-5 ${index === 1 ? "bg-red text-paper" : "bg-[#f0b429] text-ink"}`}>
+            {promo.image ? (
+              <Image src={promo.image.url} alt={promo.image.alt} width={promo.image.width} height={promo.image.height} className="mb-4 aspect-[4/3] w-full rounded-2xl object-cover" />
+            ) : null}
+            <p className="text-xs font-extrabold uppercase tracking-[0.16em]">{promo.schedule}</p>
+            <h2 className="mt-2 text-3xl font-extrabold uppercase leading-none">{promo.title}</h2>
+            <p className="mt-3 text-sm leading-relaxed">{promo.description}</p>
+            <p className="mt-4 text-2xl font-extrabold">{formatKm(promo.price)}</p>
+          </article>
+        ))}
+        {combos[0] ? (
+          <article className="rounded-3xl bg-ink p-5 text-paper md:col-span-3 md:flex md:items-end md:justify-between">
+            <div>
+              <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-[#f0b429]">{combos[0].name}</p>
+              <h2 className="mt-2 text-4xl font-extrabold uppercase leading-none">{combos[0].includes.join(" + ")}</h2>
+              <p className="mt-3 max-w-xl text-sm">{combos[0].description}</p>
+            </div>
+            <p className="mt-4 text-5xl font-extrabold text-[#f0b429]">{formatKm(combos[0].price)}</p>
+          </article>
+        ) : null}
+      </section>
 
       <section id="o-nama" className="mx-auto max-w-4xl px-4 py-16 text-center">
         <p className="text-sm font-extrabold uppercase leading-relaxed tracking-wide md:text-base">{settings.about}</p>
         <Link href="/lokacija" className="mt-6 inline-block text-sm font-extrabold lowercase text-blue underline">
-          saznaj više
+          {settings.learnMore}
         </Link>
       </section>
 
       <section className="mx-auto max-w-6xl px-4 py-8">
         <div className="mb-8 flex items-end justify-between gap-4">
-          <h2 className="text-4xl font-extrabold uppercase tracking-tight text-blue md:text-5xl">Naši burgeri</h2>
+          <h2 className="text-4xl font-extrabold uppercase tracking-tight text-blue md:text-5xl">{settings.burgersHeading}</h2>
           <Link href="/meni" className="text-sm font-extrabold lowercase text-blue underline">
-            cijeli meni
+            {settings.menuLink}
           </Link>
         </div>
-        <div className="flex snap-x gap-6 overflow-x-auto pb-4">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {burgers.map((burger) => (
-            <article key={burger.slug} className="w-[78%] shrink-0 snap-start sm:w-[46%] lg:w-[31%]">
+            <article key={burger.slug}>
               {burger.image ? (
                 <Image src={burger.image.url} alt={burger.image.alt} width={burger.image.width} height={burger.image.height} className="aspect-square w-full rounded-3xl object-cover" />
               ) : null}
               <h3 className="mt-4 text-2xl font-extrabold uppercase text-blue">{burger.name}</h3>
               <p className="mt-2 text-sm leading-relaxed">
-                <span className="font-extrabold">Sastojci: </span>
+                <span className="font-extrabold">{settings.ingredientsLabel}: </span>
                 {burger.ingredients.join(", ")}
               </p>
               <p className="mt-3 text-sm font-extrabold uppercase tracking-wide">{formatKm(burger.price)}</p>
@@ -60,7 +84,7 @@ export default async function HomePage() {
 
       <section className="mx-auto max-w-6xl px-4 py-16">
         <div className="flex flex-wrap items-end justify-between gap-4">
-          <h2 className="max-w-xl text-4xl font-extrabold uppercase leading-none text-blue md:text-5xl">Pridruži se na Instagramu</h2>
+          <h2 className="max-w-xl text-4xl font-extrabold uppercase leading-none text-blue md:text-5xl">{settings.instagramHeading}</h2>
           <a href={settings.instagramUrl} target="_blank" rel="noreferrer" className="text-sm font-extrabold text-blue underline">
             {settings.instagram}
           </a>
@@ -90,24 +114,23 @@ export default async function HomePage() {
             ))}
           </ul>
           <a href={orderHref} className="mt-6 inline-block rounded-full bg-blue px-5 py-3 text-xs font-extrabold uppercase tracking-[0.16em] text-paper">
-            Naruči za ponijeti
+            {settings.orderButton}
           </a>
         </article>
-        <article className="rounded-[2rem] bg-cream p-8">
-          <h2 className="text-4xl font-extrabold uppercase text-blue">Akcije</h2>
-          <ul className="mt-6 space-y-4">
-            {promotions.map((promo) => (
-              <li key={promo.title}>
-                <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-blue">{promo.schedule}</p>
-                <p className="text-xl font-extrabold uppercase">
-                  {promo.title} · {formatKm(promo.price)}
-                </p>
-              </li>
-            ))}
-          </ul>
-          <Link href="/akcije" className="mt-6 inline-block text-sm font-extrabold text-blue underline">
-            sve akcije
-          </Link>
+        <article className="flex flex-col justify-between rounded-[2rem] bg-red p-8 text-paper">
+          <div>
+            <p className="text-xs font-extrabold uppercase tracking-[0.16em]">Za ponijeti</p>
+            <h2 className="mt-3 text-4xl font-extrabold uppercase leading-none">{settings.whatsappTitle}</h2>
+            <p className="mt-4 max-w-md text-sm leading-relaxed">{settings.whatsappBody}</p>
+          </div>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <a href={orderHref} className="rounded-full bg-paper px-5 py-3 text-xs font-extrabold uppercase tracking-[0.16em] text-red">
+              {settings.whatsappButton}
+            </a>
+            <a href={settings.phoneHref} className="rounded-full border border-paper px-5 py-3 text-xs font-extrabold uppercase tracking-[0.16em]">
+              {settings.callLabel} {settings.phoneDisplay}
+            </a>
+          </div>
         </article>
       </section>
     </main>
