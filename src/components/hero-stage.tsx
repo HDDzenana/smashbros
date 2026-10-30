@@ -13,17 +13,15 @@ type HeroStageProps = {
   orderLabel: string;
 };
 
-function Track({ text, offset, outline = false }: { text: string; offset: number; outline?: boolean }) {
+function Track({ text, reverse = false, outline = false }: { text: string; reverse?: boolean; outline?: boolean }) {
   const line = `${text}     `.repeat(8);
   return (
     <p
-      className={`w-max whitespace-nowrap text-[11vw] font-extrabold uppercase leading-[0.9] md:text-[7.2vw] ${outline ? "text-transparent" : "text-red"}`}
-      style={{
-        transform: `translate3d(${offset}px, 0, 0)`,
-        WebkitTextStroke: outline ? "1.5px #e10600" : undefined,
-      }}
+      className={`marquee w-max whitespace-nowrap text-[11vw] font-extrabold uppercase leading-[0.9] md:text-[7.2vw] ${reverse ? "marquee-reverse" : ""} ${outline ? "text-transparent" : "text-red"}`}
+      style={{ WebkitTextStroke: outline ? "1.5px #e10600" : undefined }}
     >
-      {line}
+      <span>{line}</span>
+      <span>{line}</span>
     </p>
   );
 }
@@ -62,10 +60,10 @@ export function HeroStage({ title, slogan, tagline, imageUrl, imageAlt, orderHre
           className="absolute left-1/2 top-1/2 w-[160%] -translate-x-1/2 -translate-y-1/2 -rotate-12"
           style={{ opacity: 1 - progress }}
         >
-          <Track text={slogan} offset={-progress * 520} />
-          <Track text={tagline} offset={progress * 460 - 220} outline />
-          <Track text={slogan} offset={-progress * 380 - 80} />
-          <Track text={tagline} offset={progress * 300 - 40} outline />
+          <Track text={slogan} />
+          <Track text={tagline} reverse outline />
+          <Track text={slogan} />
+          <Track text={tagline} reverse outline />
         </div>
 
         <div className="absolute inset-0" style={{ clipPath: `circle(${radius}% at 50% 42%)` }}>

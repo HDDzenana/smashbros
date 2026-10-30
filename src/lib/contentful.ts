@@ -48,6 +48,7 @@ export type Settings = {
   cookieBody: string;
   cookieAccept: string;
   fabLabel: string;
+  showOrderPopup: boolean;
   logo: Picture | null;
   heroImage: Picture | null;
   gallery: Picture[];
@@ -102,6 +103,12 @@ export type Promotion = {
   sortOrder: number;
 };
 
+export type BurgerPart = {
+  name: string;
+  image: Picture;
+  sortOrder: number;
+};
+
 export type SiteContent = {
   settings: Settings;
   hours: Hour[];
@@ -110,6 +117,7 @@ export type SiteContent = {
   drinks: Drink[];
   combos: Combo[];
   promotions: Promotion[];
+  burgerParts: BurgerPart[];
 };
 
 type AssetFile = {
@@ -240,6 +248,7 @@ export const getSite = cache(async (): Promise<SiteContent> => {
     cookieBody: text(fields.cookieBody),
     cookieAccept: text(fields.cookieAccept),
     fabLabel: text(fields.fabLabel),
+    showOrderPopup: fields.showOrderPopup === true,
     logo: picture(fields.logo as Link, assets),
     heroImage: picture(fields.heroImage as Link, assets),
     gallery: pictures(fields.gallery as Link[], assets),
@@ -293,14 +302,24 @@ export const getSite = cache(async (): Promise<SiteContent> => {
       })),
     ),
     promotions: byOrder(
-      ofType("promotion").map((entry) => ({
-        title: text(entry.fields.title),
-        schedule: text(entry.fields.schedule),
-        price: price(entry.fields.price),
-        description: text(entry.fields.description),
-        image: picture(entry.fields.image as Link, assets),
-        sortOrder: order(entry.fields.sortOrder),
-      })),
+      ofType("promotion")
+        .filter((entry) => entry.fields.visible !== false)
+        .map((entry) => ({
+          title: text(entry.fields.title),
+          schedule: text(entry.fields.schedule),
+          price: price(entry.fields.price),
+          description: text(entry.fields.description),
+          image: picture(entry.fields.image as Link, assets),
+          sortOrder: order(entry.fields.sortOrder),
+        })),
+    ),
+    burgerParts: byOrder(
+      ofType("burgerPart").flatMap((entry) => {
+        if (entry.fields.visible === false) return [];
+        const image = picture(entry.fields.image as Link, assets);
+        if (!image) return [];
+        return [{ name: text(entry.fields.name), image, sortOrder: order(entry.fields.sortOrder) }];
+      }),
     ),
   };
 });

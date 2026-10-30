@@ -21,6 +21,7 @@ export function OrderWidgets({
   cookieBody,
   cookieAccept,
   fabLabel,
+  showOrderPopup,
 }: {
   whatsappHref: string;
   kicker: string;
@@ -32,14 +33,15 @@ export function OrderWidgets({
   cookieBody: string;
   cookieAccept: string;
   fabLabel: string;
+  showOrderPopup: boolean;
 }) {
   const [cookies, setCookies] = useState(false);
   const [modal, setModal] = useState(false);
 
   useEffect(() => {
     setCookies(localStorage.getItem("sb-cookies") !== "1");
-    setModal(sessionStorage.getItem("sb-wa") !== "1");
-  }, []);
+    setModal(showOrderPopup && sessionStorage.getItem("sb-wa") !== "1");
+  }, [showOrderPopup]);
 
   function acceptCookies() {
     localStorage.setItem("sb-cookies", "1");
@@ -53,7 +55,7 @@ export function OrderWidgets({
 
   return (
     <>
-      {modal ? (
+      {showOrderPopup && modal ? (
         <div className="fixed inset-0 z-50 grid place-items-center bg-ink/40 p-4">
           <div className="relative w-full max-w-md overflow-hidden rounded-sm bg-paper shadow-2xl">
             <button type="button" onClick={closeModal} className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-paper text-xl" aria-label="Zatvori">

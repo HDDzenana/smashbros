@@ -78,6 +78,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           cookieBody={settings.cookieBody}
           cookieAccept={settings.cookieAccept}
           fabLabel={settings.fabLabel}
+          showOrderPopup={settings.showOrderPopup}
         />
       </body>
     </html>

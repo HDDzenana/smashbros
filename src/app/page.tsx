@@ -12,7 +12,7 @@ function whatsappHref(phoneHref: string, message: string) {
 }
 
 export default async function HomePage() {
-  const { settings, burgers, combos, promotions, hours } = await getSite();
+  const { settings, burgers, combos, promotions, burgerParts, hours } = await getSite();
   const orderHref = whatsappHref(settings.phoneHref, settings.whatsappMessage);
 
   return (
@@ -27,6 +27,30 @@ export default async function HomePage() {
         orderLabel={settings.orderButton}
       />
 
+      {burgerParts.length > 0 ? (
+        <section className="relative overflow-hidden px-4 py-20">
+          <p aria-hidden="true" className="pointer-events-none select-none text-center text-[13vw] font-extrabold uppercase leading-[0.78] text-red">
+            {settings.slogan}
+            <br />
+            {settings.slogan}
+          </p>
+          <div className="pointer-events-none absolute inset-x-0 top-8 bottom-8 flex flex-col items-center justify-center">
+            {burgerParts.map((part, index) => (
+              <Image
+                key={part.name}
+                src={part.image.url}
+                alt={part.name}
+                width={part.image.width}
+                height={part.image.height}
+                className="w-[min(42vw,15rem)] object-contain mix-blend-multiply"
+                style={{ marginTop: index === 0 ? 0 : "-6%", transform: `rotate(${(index % 2 === 0 ? -4 : 5)}deg)` }}
+              />
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      {promotions.length > 0 || combos.length > 0 ? (
       <section className="mx-auto grid max-w-6xl gap-4 px-4 py-16 md:grid-cols-3">
         {promotions.map((promo, index) => (
           <article key={promo.title} className={`overflow-hidden rounded-3xl p-5 ${index === 1 ? "bg-red text-paper" : "bg-[#f0b429] text-ink"}`}>
@@ -50,6 +74,7 @@ export default async function HomePage() {
           </article>
         ) : null}
       </section>
+      ) : null}
 
       <section id="o-nama" className="mx-auto max-w-4xl px-4 py-16 text-center">
         <p className="text-sm font-extrabold uppercase leading-relaxed tracking-wide md:text-base">{settings.about}</p>
