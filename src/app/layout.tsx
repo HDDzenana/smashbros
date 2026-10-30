@@ -6,6 +6,7 @@ import { OrderWidgets } from "@/components/order-widgets";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { getSite } from "@/lib/contentful";
+import { pageMetadata, restaurantJsonLd, siteUrl } from "@/lib/seo";
 import "./globals.css";
 
 const sans = Nunito({
@@ -21,22 +22,47 @@ function whatsappHref(phoneHref: string, message: string) {
 
 export async function generateMetadata(): Promise<Metadata> {
   const { settings } = await getSite();
+  const description = `${settings.heroText || settings.about} Smash burger Sarajevo na Grbavici. Naruči burger online, za ponijeti.`;
+  const base = siteUrl();
   return {
+    ...pageMetadata(`${settings.siteName} · ${settings.tagline}`, description, "/"),
+    metadataBase: base ? new URL(base) : undefined,
     title: {
-      default: `${settings.siteName} · ${settings.tagline}`,
+      default: `Smash Burger Sarajevo · ${settings.siteName}`,
       template: `%s · ${settings.siteName}`,
     },
-    description: settings.heroText,
+    description,
+    applicationName: settings.siteName,
+    authors: [{ name: settings.siteName }],
+    openGraph: {
+      title: `${settings.siteName} · ${settings.tagline}`,
+      description,
+      locale: "bs_BA",
+      type: "website",
+      siteName: settings.siteName,
+      images: settings.heroImage ? [{ url: settings.heroImage.url, alt: settings.heroImage.alt }] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: settings.siteName,
+      description,
+      images: settings.heroImage ? [settings.heroImage.url] : undefined,
+    },
+    robots: { index: true, follow: true },
+    icons: settings.logo ? { icon: settings.logo.url } : undefined,
   };
 }
 
 export default async function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
-  const { settings } = await getSite();
+  const site = await getSite();
+  const { settings } = site;
   const orderHref = whatsappHref(settings.phoneHref, settings.whatsappMessage);
+  const jsonLd = JSON.stringify(restaurantJsonLd(site)).replace(/</g, "\\u003c");
 
   return (
     <html lang="bs" className={sans.variable} data-scroll-behavior="smooth">
       <body className="bg-paper font-sans text-ink antialiased">
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd }} />
         <SiteHeader
           siteName={settings.siteName}
           phoneHref={settings.phoneHref}

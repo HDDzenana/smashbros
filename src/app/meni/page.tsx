@@ -2,10 +2,16 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { formatKm } from "@/lib/format";
 import { getSite } from "@/lib/contentful";
+import { pageMetadata } from "@/lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { settings } = await getSite();
-  return { title: settings.menuTitle };
+  return pageMetadata(
+    settings.menuTitle,
+    `Naruči burger u Sarajevu. Smash burger na Grbavici: ${settings.burgersHeading}. Order online, za ponijeti.`,
+    "/meni",
+    ["meni smash burger", "cijena burger Sarajevo"],
+  );
 }
 
 export default async function MenuPage() {

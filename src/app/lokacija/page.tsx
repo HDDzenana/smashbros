@@ -1,9 +1,15 @@
 import type { Metadata } from "next";
 import { getSite } from "@/lib/contentful";
+import { pageMetadata } from "@/lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { settings } = await getSite();
-  return { title: settings.locationTitle };
+  return pageMetadata(
+    settings.locationTitle,
+    `Grbavica burger na ${settings.address}, ${settings.city}. Smash Burger Sarajevo, order online. ${settings.hoursNote}`,
+    "/lokacija",
+    ["Grbavička burger", "burger blizu mene Sarajevo"],
+  );
 }
 
 export default async function LocationPage() {

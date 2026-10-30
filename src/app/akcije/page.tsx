@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { formatKm } from "@/lib/format";
 import { getSite } from "@/lib/contentful";
+import { pageMetadata } from "@/lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { settings } = await getSite();
-  return { title: settings.promotionsTitle };
+  const { settings, promotions } = await getSite();
+  const description = `Smash burger Sarajevo akcije na Grbavici. ${promotions.map((promo) => `${promo.title} ${promo.schedule}`).join(". ")} Naruči burger online.`;
+  return pageMetadata(settings.promotionsTitle, description, "/akcije", ["burger akcija Sarajevo", "best burger in Sarajevo"]);
 }
 
 export default async function PromotionsPage() {

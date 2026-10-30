@@ -45,9 +45,13 @@ export function SiteFooter({
             target="_blank"
             rel="noreferrer"
             aria-label={instagram}
-            className="grid h-11 w-11 place-items-center rounded-full bg-paper text-sm font-extrabold text-red"
+            className="grid h-11 w-11 place-items-center rounded-full bg-paper text-red"
           >
-            Ig
+            <svg viewBox="0 0 24 24" aria-hidden="true" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8">
+              <rect x="3" y="3" width="18" height="18" rx="5" />
+              <circle cx="12" cy="12" r="4" />
+              <circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" stroke="none" />
+            </svg>
           </a>
           <a href={whatsappHref} className="rounded-full bg-[#25D366] px-5 py-3 text-xs font-extrabold uppercase tracking-[0.14em] text-white">
             {labels.order}
@@ -58,7 +62,7 @@ export function SiteFooter({
         </div>
       </div>
       <div className="border-t border-paper/30 px-4 py-4 text-center text-[11px] font-extrabold uppercase tracking-[0.14em]">
-        {address}, {city}
+        Smash burger Sarajevo · Grbavica burger · naruči burger online · {address}, {city}
       </div>
     </footer>
   );
