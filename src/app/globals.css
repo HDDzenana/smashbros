@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+@theme {
+  --color-paper: #fff7e3;
+  --color-cream: #fff3cc;
+  --color-ink: #202024;
+  --color-blue: #e10600;
+  --color-red: #e10600;
+  --font-sans: var(--font-nunito), "Avenir Next", sans-serif;
+  --font-display: var(--font-nunito), "Avenir Next", sans-serif;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+
+.marquee {
+  animation: marquee 28s linear infinite;
+}
+
+.marquee-reverse {
+  animation-direction: reverse;
+}
+
+.spin-slow {
+  animation: spin 12s linear infinite;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee,
+  .spin-slow {
+    animation: none;
+  }
+}
